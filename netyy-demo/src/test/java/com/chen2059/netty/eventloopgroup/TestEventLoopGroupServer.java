@@ -21,7 +21,7 @@ import java.nio.charset.Charset;
  **/
 @Slf4j
 public class TestEventLoopGroupServer {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         DefaultEventLoopGroup group = new DefaultEventLoopGroup();
         new ServerBootstrap()
                 .group(new NioEventLoopGroup(1), new NioEventLoopGroup(2))
@@ -33,6 +33,7 @@ public class TestEventLoopGroupServer {
                             @Override
                             public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                                 ByteBuf buf = (ByteBuf) msg;
+                                System.out.println("hi");
                                 log.debug(buf.toString(Charset.defaultCharset()));
                                 System.out.println(buf.toString(Charset.defaultCharset()));
                                 ctx.fireChannelRead(msg);
@@ -47,7 +48,7 @@ public class TestEventLoopGroupServer {
                         });
                     }
                 })
-                .bind(8080);
+                .bind(8085).sync();
 
     }
 }
