@@ -33,7 +33,7 @@ public class CloseFutureClient {
                         nioSocketChannel.pipeline().addLast(new StringEncoder());
                     }
                 })
-                .connect(new InetSocketAddress("127.0.0.1", 8085));
+                .connect(new InetSocketAddress("127.0.0.1", 8088));
 
 //        channelFuture.addListeners(new ChannelFutureListener() {
 //            @Override
