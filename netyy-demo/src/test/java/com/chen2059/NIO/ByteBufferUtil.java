@@ -1,5 +1,6 @@
 package com.chen2059.NIO;
 
+
 import io.netty.util.internal.StringUtil;
 
 import java.nio.ByteBuffer;
@@ -11,7 +12,6 @@ import static jdk.nashorn.internal.runtime.regexp.joni.encoding.CharacterType.NE
  * @program: netty
  * @description:
  * @author: Chen2059
- * @create: 2021-08-25
  **/
 public class ByteBufferUtil {
     private static final char[] BYTE2CHAR = new char[256];
@@ -82,11 +82,14 @@ public class ByteBufferUtil {
     public static void debugAll(ByteBuffer buffer) {
         int oldlimit = buffer.limit();
         buffer.limit(buffer.capacity());
-        StringBuilder origin = new StringBuilder(256);
-        appendPrettyHexDump(origin, buffer, 0, buffer.capacity());
-        System.out.println("+--------+-------------------- all ------------------------+----------------+");
-        System.out.printf("position: [%d], limit: [%d]\n", buffer.position(), oldlimit);
-        System.out.println(origin);
+        byte[] array = buffer.array();
+        String string = new String(array, 0, array.length);
+        System.out.println(string);
+//        StringBuilder origin = new StringBuilder(256);
+//        appendPrettyHexDump(origin, buffer, 0, buffer.capacity());
+//        System.out.println("+--------+-------------------- all ------------------------+----------------+");
+//        System.out.printf("position: [%d], limit: [%d]\n", buffer.position(), oldlimit);
+//        System.out.println(origin);
         buffer.limit(oldlimit);
     }
 

@@ -38,7 +38,7 @@ public class TestEventLoopGroupServer {
                                 System.out.println(buf.toString(Charset.defaultCharset()));
                                 ctx.fireChannelRead(msg);
                             }
-                        }).addLast(group,"handler2",new ChannelInboundHandlerAdapter(){
+                        }).addLast(group,"handler2", new ChannelInboundHandlerAdapter(){
                             @Override
                             public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                                 System.out.println(msg);

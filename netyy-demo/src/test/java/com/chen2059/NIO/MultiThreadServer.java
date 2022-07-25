@@ -31,7 +31,6 @@ public class MultiThreadServer {
         Worker[] workers = new Worker[Runtime.getRuntime().availableProcessors()];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new Worker(i);
-
         }
         AtomicInteger index = new AtomicInteger(0);
         while (true) {
@@ -45,7 +44,7 @@ public class MultiThreadServer {
                     accept.configureBlocking(false);
                     log.debug("connected....{}", accept.getRemoteAddress());
                     log.debug("before", accept.getRemoteAddress());
-                    workers[index.getAndDecrement() %workers.length].register(accept);
+                    workers[index.getAndIncrement() %workers.length].register(accept);
                     log.debug("after", accept.getRemoteAddress());
                 }
             }
@@ -65,6 +64,21 @@ class Worker implements Runnable {
         this.index = index;
     }
 
+    private static void split(ByteBuffer source) {
+        source.flip();
+        for (int i = 0; i < source.limit(); i++) {
+            if (source.get(i) == '\n') {
+                int length = i + 1 - source.position();
+                ByteBuffer target = ByteBuffer.allocate(length);
+                for (int j = 0; j < length; j++) {
+                    target.put(source.get());
+                }
+                debugAll(target);
+            }
+        }
+        source.compact();
+    }
+
     public void register(SocketChannel channel) throws IOException {
         if (!start) {
             selector = Selector.open();
@@ -73,7 +87,8 @@ class Worker implements Runnable {
         }
         tasks.add(() -> {
             try {
-                SelectionKey register = channel.register(selector, 0, null);
+                final ByteBuffer buffer = ByteBuffer.allocate(1);
+                SelectionKey register = channel.register(selector, 0, buffer);
                 register.interestOps(SelectionKey.OP_READ);
                 selector.selectNow();
             } catch (ClosedChannelException e) {
@@ -99,15 +114,19 @@ class Worker implements Runnable {
                     SelectionKey key = iterator.next();
                     if (key.isReadable()) {
                         SocketChannel channel = (SocketChannel) key.channel();
-                        ByteBuffer buffer = ByteBuffer.allocate(128);
+                        final ByteBuffer buffer = (ByteBuffer) key.attachment();
                         try {
-                            int read = channel.read(buffer);
-                            if (read == -1) {
-                                key.cancel();
+                            final int read = channel.read(buffer);
+                            if (read == -1){
                                 channel.close();
                             } else {
-                                buffer.flip();
-                                debugAll(buffer);
+                                split(buffer);
+                                if(buffer.limit() == buffer.position()){
+                                    final ByteBuffer buffer1 = ByteBuffer.allocate(buffer.capacity() * 2);
+                                    buffer1.flip();
+                                    buffer1.put(buffer);
+                                    key.attach(buffer);
+                                }
                             }
                         } catch (IOException e) {
                             e.printStackTrace();

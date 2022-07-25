@@ -8,13 +8,13 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringEncoder;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
  * @program: netty
  * @description:
  * @author: Chen2059
- * @create: 2021-08-31
  **/
 public class Client {
     public static void main(String[] args) throws InterruptedException {
@@ -27,9 +27,9 @@ public class Client {
                         channel.pipeline().addLast(new StringEncoder());
                     }
                 })
-                .connect("127.0.0.1",8080)
+                .connect("127.0.0.1",8088)
                 .sync()
                 .channel()
-                .writeAndFlush(new Date() + ":hello world!");
+                .writeAndFlush(LocalDateTime.now() + ":hello world!");
     }
 }

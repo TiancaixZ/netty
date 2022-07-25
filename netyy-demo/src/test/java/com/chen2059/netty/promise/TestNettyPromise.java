@@ -21,7 +21,7 @@ public class TestNettyPromise {
         new Thread(() -> {
             log.debug("开始计算");
             try {
-                int i = 1/0;
+//                int i = 1/0;
                 Thread.sleep(1000);
                 promise.setSuccess(80);
             } catch (Exception e) {

@@ -23,6 +23,7 @@ import static com.chen2059.NIO.ByteBufferUtil.debugAll;
 @Slf4j
 public class Server {
 
+
     private static void split(ByteBuffer source) {
         source.flip();
         for (int i = 0; i < source.limit(); i++) {
@@ -50,13 +51,18 @@ public class Server {
 
 //            ArrayList<SocketChannel> list = new ArrayList<SocketChannel>();
             while(true){
+                /*3. select 没有事件发生 线程阻塞
+                * 事件发生后 取消 处理 */
                 selector.select();
+                /*4. 处理事件, selectedKeys 内部包含了所有发生的事件*/
                 final Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
                 while (iterator.hasNext()){
                     final SelectionKey key = iterator.next();
                     iterator.remove();
                     log.debug("key: {}", key);
+                    /*5. 区分事件类型*/
                     if (key.isAcceptable()) {
+                        /*accept*/
                         final ServerSocketChannel scc = (ServerSocketChannel) key.channel();
                         final SocketChannel channel = scc.accept();
                         channel.configureBlocking(false);

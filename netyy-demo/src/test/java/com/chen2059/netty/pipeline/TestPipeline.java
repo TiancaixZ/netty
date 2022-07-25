@@ -1,10 +1,13 @@
 package com.chen2059.netty.pipeline;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+
+import java.nio.charset.Charset;
 
 /**
  * @program: netty
@@ -21,18 +24,20 @@ public class TestPipeline {
 
                     @Override
                     protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
-                        nioSocketChannel.pipeline().addLast(new ChannelInboundHandlerAdapter(){
+                        nioSocketChannel.pipeline(). addLast(new ChannelInboundHandlerAdapter(){
                             @Override
                             public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                ByteBuf buf = (ByteBuf) msg;
+                                String string = buf.toString(Charset.defaultCharset());
                                 System.out.println(1);
-                                super.channelRead(ctx, msg);
+                                super.channelRead(ctx, string);
                             }
                         });
 
                         nioSocketChannel.pipeline().addLast(new ChannelInboundHandlerAdapter(){
                             @Override
                             public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                                System.out.println(2);
+                                System.out.println(2 + "======" + msg);
                                 super.channelRead(ctx, msg);
                             }
                         });
@@ -40,7 +45,7 @@ public class TestPipeline {
                             @Override
                             public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                                 System.out.println(3);
-                                super.channelRead(ctx, msg);
+                                nioSocketChannel.writeAndFlush(ctx.alloc().buffer().writeBytes("server.....".getBytes()));
                             }
                         });
                         nioSocketChannel.pipeline().addLast(new ChannelOutboundHandlerAdapter(){

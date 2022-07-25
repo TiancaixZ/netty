@@ -1,0 +1,78 @@
+spring:
+  profiles:
+    active: dev
+
+---
+
+spring:
+  profiles: dev
+  application:
+    name: movie-server
+  http:
+    multipart:
+      max-file-size: 100Mb
+      max-request-size: 100Mb
+  redis:
+    lettuce:
+      pool:
+        max-active: 50
+        max-idle: 2000
+        max-wait: 400
+    host: 192.168.123.4
+    port: 6379
+    timeout: 5000
+    database: 1
+  session:
+    store-type: redis
+    redis:
+      flush-mode: ON_SAVE
+      namespace: spring:session
+  mvc:
+    static-path-pattern: /out/**,/*.txt,/demonstration/**
+  resources:
+    static-locations: classpath:/
+  autoconfigure:
+    exclude: com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure
+  datasource:
+    dynamic:
+      druid:
+        initial-size: 5
+        max-active: 8
+        min-idle: 3
+        max-wait: 1000
+      primary: master
+      static: false
+      datasource:
+        master:
+          url: jdbc:mysql://192.168.123.4:3308/Movie?characterEncoding=UTF-8&useSSL=true&zeroDateTimeBehavior=convertToNull
+          username: root
+          password: chen2059
+          driver-class-name: com.mysql.jdbc.Driver
+        slave_1:
+          url: jdbc:mysql://192.168.123.4:3309/Movie?characterEncoding=UTF-8&useSSL=true&zeroDateTimeBehavior=convertToNull
+          username: root
+          password: chen2059
+#           initial-size: 1
+#           min-idle: 1
+#           max-active: 20
+#           test-on-borrow: true
+          driver-class-name: com.mysql.jdbc.Driver
+
+server:
+  port: 8088
+  servlet:
+    session:
+      cookie:
+        name: ${spring.application.name}-cookie
+      timeout: P1D
+    context-path: /movie/
+  compression:
+    enabled: true
+    min-response-size: 1024
+    mime-types: application/json
+  ssl:
+    enabled: false
+
+# ????
+logging:
+  config: classpath:logback-spring.xml

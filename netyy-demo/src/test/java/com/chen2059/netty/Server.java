@@ -13,7 +13,6 @@ import io.netty.handler.codec.string.StringDecoder;
  * @program: netty
  * @description:
  * @author: Chen2059
- * @create: 2021-08-31
  **/
 public class Server {
     public static void main(String[] args) {

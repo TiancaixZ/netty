@@ -12,7 +12,6 @@ import java.util.Iterator;
  * @program: netty
  * @description:
  * @author: Chen2059
- * @create: 2021-08-29
  **/
 public class WriteClient {
     public static void main(String[] args) throws IOException {
